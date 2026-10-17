@@ -1,0 +1,273 @@
+{
+  "$defs": {
+    "GraphEdge": {
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "source": {
+          "title": "Source",
+          "type": "string"
+        },
+        "target": {
+          "title": "Target",
+          "type": "string"
+        },
+        "label": {
+          "default": "",
+          "title": "Label",
+          "type": "string"
+        },
+        "confidence": {
+          "default": 1.0,
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Confidence",
+          "type": "number"
+        },
+        "epistemic_status": {
+          "default": "observed",
+          "enum": [
+            "observed",
+            "inferred",
+            "user_confirmed"
+          ],
+          "title": "Epistemic Status",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "source",
+        "target"
+      ],
+      "title": "GraphEdge",
+      "type": "object"
+    },
+    "GraphModel": {
+      "properties": {
+        "nodes": {
+          "items": {
+            "$ref": "#/$defs/GraphNode"
+          },
+          "title": "Nodes",
+          "type": "array"
+        },
+        "edges": {
+          "items": {
+            "$ref": "#/$defs/GraphEdge"
+          },
+          "title": "Edges",
+          "type": "array"
+        }
+      },
+      "title": "GraphModel",
+      "type": "object"
+    },
+    "GraphNode": {
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "type": {
+          "default": "process",
+          "enum": [
+            "process",
+            "decision",
+            "database",
+            "client",
+            "external_service",
+            "ambiguous"
+          ],
+          "title": "Type",
+          "type": "string"
+        },
+        "label": {
+          "title": "Label",
+          "type": "string"
+        },
+        "properties": {
+          "type": "object",
+          "additionalProperties": true,
+          "title": "Properties"
+        },
+        "position": {
+          "additionalProperties": {
+            "type": "number"
+          },
+          "title": "Position",
+          "type": "object"
+        },
+        "source_bbox": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "number"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Bbox"
+        },
+        "confidence": {
+          "default": 1.0,
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Confidence",
+          "type": "number"
+        },
+        "epistemic_status": {
+          "default": "observed",
+          "enum": [
+            "observed",
+            "inferred",
+            "user_confirmed"
+          ],
+          "title": "Epistemic Status",
+          "type": "string"
+        },
+        "research_findings": {
+          "items": {
+            "additionalProperties": true,
+            "type": "object"
+          },
+          "title": "Research Findings",
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "label"
+      ],
+      "title": "GraphNode",
+      "type": "object"
+    },
+    "GraphOperation": {
+      "properties": {
+        "op_id": {
+          "title": "Op Id",
+          "type": "string"
+        },
+        "op_type": {
+          "enum": [
+            "ADD_NODE",
+            "UPDATE_NODE",
+            "DELETE_NODE",
+            "ADD_EDGE",
+            "DELETE_EDGE"
+          ],
+          "title": "Op Type",
+          "type": "string"
+        },
+        "payload": {
+          "additionalProperties": true,
+          "title": "Payload",
+          "type": "object"
+        },
+        "rationale": {
+          "default": "",
+          "title": "Rationale",
+          "type": "string"
+        },
+        "status": {
+          "default": "pending_review",
+          "enum": [
+            "pending_review",
+            "approved",
+            "rejected"
+          ],
+          "title": "Status",
+          "type": "string"
+        }
+      },
+      "required": [
+        "op_id",
+        "op_type",
+        "payload"
+      ],
+      "title": "GraphOperation",
+      "type": "object"
+    },
+    "ValidationIssue": {
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "severity": {
+          "enum": [
+            "error",
+            "warning"
+          ],
+          "title": "Severity",
+          "type": "string"
+        },
+        "rule_code": {
+          "enum": [
+            "DISCONNECTED_NODE",
+            "UNREACHABLE_STEP",
+            "DECISION_MISSING_BRANCH",
+            "AMBIGUOUS_LABEL"
+          ],
+          "title": "Rule Code",
+          "type": "string"
+        },
+        "affected_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Affected Ids",
+          "type": "array"
+        },
+        "explanation": {
+          "title": "Explanation",
+          "type": "string"
+        },
+        "proposed_fix_op": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/GraphOperation"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "id",
+        "severity",
+        "rule_code",
+        "affected_ids",
+        "explanation"
+      ],
+      "title": "ValidationIssue",
+      "type": "object"
+    }
+  },
+  "properties": {
+    "graph": {
+      "$ref": "#/$defs/GraphModel"
+    },
+    "issues": {
+      "items": {
+        "$ref": "#/$defs/ValidationIssue"
+      },
+      "title": "Issues",
+      "type": "array"
+    }
+  },
+  "required": [
+    "graph",
+    "issues"
+  ],
+  "title": "Analysis",
+  "type": "object"
+}
